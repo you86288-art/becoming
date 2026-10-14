@@ -360,6 +360,15 @@ body[data-tab="vision"]{--acc:#6B5B4B}
 .vview-in p{margin:0;font-size:20px;text-align:center}
 .vempty{border:1px dashed var(--sep);border-radius:16px;padding:28px 16px;text-align:center;color:var(--label2);font-size:13px}
 
+/* ===== 노션 원문 리더 ===== */
+#reader{position:fixed;inset:0;z-index:998;background:var(--gbg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+#reader[hidden]{display:none}
+#reader .rd-in{max-width:680px;margin:0 auto;padding:16px 18px 60px;display:grid;gap:10px}
+#reader h2{font:700 22px/1.35 var(--sys);margin:4px 0 0}
+#reader #rdBody{font:400 16px/1.8 var(--sys);color:var(--ink)}
+#reader #rdBody p{margin:0 0 12px}#reader #rdBody h3{font:700 17px var(--sys);margin:18px 0 8px}
+#reader #rdBody blockquote{margin:0 0 12px;padding:8px 12px;border-left:3px solid var(--gold);background:var(--card);border-radius:8px}
+#reader #rdBody ul{margin:0 0 12px;padding-left:20px}
 /* ===== SATS · 잠들기 전 5분 ===== */
 .card.sats .slib{display:grid;gap:6px}
 .card.sats .sitem{display:grid;gap:2px;text-align:left;border:0;border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.06);color:#E8EBF7;cursor:pointer;font:inherit}
@@ -856,6 +865,9 @@ body[data-tab="vision"]{--acc:#6B5B4B}
   </section>
 </div>
 
+    <div id="reader" hidden role="dialog" aria-label="노션 원문"><div class="rd-in">
+      <div class="row" style="justify-content:space-between;align-items:center"><span class="status" id="rdMeta"></span><button class="ghost" id="rdClose">닫기</button></div>
+      <h2 id="rdTitle"></h2><p class="anchor" id="rdLine"></p><div id="rdBody"></div></div></div>
 <script>
 (function(){
 const $=s=>document.querySelector(s);
@@ -1291,9 +1303,19 @@ function renderArch(){
   const themes=[...new Set(archive.flatMap(a=>a.themes||[]))];
   $("#themeChips").innerHTML=[`<button class="chip" aria-pressed="${!themeFilter}" data-t="">전체 ${archive.length}</button>`,...themes.map(t=>`<button class="chip" aria-pressed="${themeFilter===t}" data-t="${esc(t)}">${esc(t)}</button>`)].join("");
   const list=archive.filter(a=>!themeFilter||(a.themes||[]).includes(themeFilter)).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
-  $("#archList").innerHTML=list.length?list.map(a=>`<div class="arch-item"><span class="t">${esc(a.title)}</span>${a.line?`<span class="l">${esc(a.line)}</span>`:""}<div class="tags">${a.format?`<span class="tag">${esc(a.format)}</span>`:""}${(a.themes||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div></div>`).join(""):`<div class="empty">노션 아카이브를 불러오는 중이에요.</div>`;
+  $("#archList").innerHTML=list.length?list.map(a=>`<div class="arch-item"${a.id?` data-id="${a.id}" style="cursor:pointer"`:""}><span class="t">${esc(a.title)}</span>${a.line?`<span class="l">${esc(a.line)}</span>`:""}<div class="tags">${a.format?`<span class="tag">${esc(a.format)}</span>`:""}${(a.themes||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("")}</div></div>`).join(""):`<div class="empty">노션 아카이브를 불러오는 중이에요.</div>`;
 }
 $("#themeChips").addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(b){themeFilter=b.dataset.t;renderArch()}});
+$("#archList").addEventListener("click",e=>{const b=e.target.closest("[data-id]");if(b)openReader(b.dataset.id)});
+async function openReader(id){const a=archive.find(x=>x.id===id)||{};const ov=$("#reader");ov.hidden=false;document.body.style.overflow="hidden";
+  $("#rdMeta").textContent=[a.date,a.format,...(a.themes||[])].filter(Boolean).join(" · ");$("#rdTitle").textContent=a.title||"";$("#rdLine").textContent=a.line||"";$("#rdBody").innerHTML=`<p class="sub">노션에서 불러오는 중</p>`;
+  const show=j=>{let html="",list=false;for(const b of j.blocks||[]){if(b.k!=="li"&&list){html+="</ul>";list=false}
+      if(b.k==="h")html+=`<h3>${esc(b.t)}</h3>`;else if(b.k==="q")html+=`<blockquote>${esc(b.t)}</blockquote>`;else if(b.k==="hr")html+="<hr class='thin'>";else if(b.k==="li"){if(!list){html+="<ul>";list=true}html+=`<li>${esc(b.t)}</li>`}else html+=`<p>${esc(b.t)}</p>`}
+    if(list)html+="</ul>";$("#rdBody").innerHTML=html||`<p class="sub">본문이 비어 있어요.</p>`};
+  const ck="gd-page-"+id;const c=LS.get(ck,null);if(c)show(c);
+  try{const r=await fetch("/api/notion?s=page&id="+id);const j=await r.json();if(r.ok){show(j);LS.set(ck,{blocks:j.blocks})}else if(!c)$("#rdBody").innerHTML=`<p class="sub">${esc(j.message||"불러오지 못했어요.")}</p>`}
+  catch(_){if(!c)$("#rdBody").innerHTML=`<p class="sub">인터넷 연결을 확인해주세요.</p>`}}
+$("#rdClose").onclick=()=>{$("#reader").hidden=true;document.body.style.overflow=""};
 $("#myDiaries").addEventListener("click",e=>{const b=e.target.closest("[data-k]");if(b)go(b.dataset.k)});
 
 // ---------- MAP · 나의 소우주 ----------
@@ -1494,13 +1516,17 @@ $("#vTitle").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault
 // ---------- YOGA · THE 692 ----------
 const YLOG=[{"n": 283, "d": "2026-10-11", "m": 15, "type": "명상", "t": "15 Minute Guided Meditation | Strength & Grounding In Stressful Times", "lv": "부드러움", "url": "https://youtu.be/z0GtmPnqAd8"}, {"n": 519, "d": "2026-10-11", "m": 49, "type": "수련", "t": "45 Min Yoga Flow | Intermediate Full Body Yoga", "lv": "강함", "url": "https://youtu.be/E2oIyh87_3k"}, {"n": 395, "d": "2026-10-10", "m": 50, "type": "수련", "t": "45 Min Power Yoga | Fiery Yoga Flow To Feel Fantastic", "lv": "강함", "url": "https://youtu.be/1jgHI4HKDyg"}, {"n": 267, "d": "2026-10-09", "m": 11, "type": "명상", "t": "Guided Morning Meditation | 10 Minutes To Start Every Day Perfectly", "lv": "부드러움", "url": "https://youtu.be/FGO8IWiusJo"}, {"n": 516, "d": "2026-10-09", "m": 40, "type": "수련", "t": "30 Min Evening Yoga | Wind Down & End Your Day Perfectly", "lv": "보통", "url": "https://youtu.be/BGedQE8EnZU", "note": "알아차림, 단단해지는 코어, 줄리아나, 그리고 나와의 연결 — 매일 새롭다."}, {"n": 553, "d": "2026-10-09", "m": 35, "type": "수련", "t": "30 Min Yoga Flow | Total Body Intermediate Yoga", "lv": "강함", "url": "https://youtu.be/sSrObtf6xdM"}, {"n": 589, "d": "2026-10-08", "m": 66, "type": "수련", "t": "60 Min Yoga Flow + Breath Work", "lv": "강함", "url": "https://youtu.be/Dci8bog9ulY"}, {"n": 624, "d": "2026-10-08", "m": 31, "type": "수련", "t": "30 Min Total Body Yoga Workout", "lv": "강함", "url": "https://youtu.be/dPd93_J74-Y"}, {"n": 335, "d": "2026-10-07", "m": 12, "type": "명상", "t": "10 MIN Guided Meditation To Clear Your Mind & Start New Positive Habits", "lv": "부드러움", "url": "https://youtu.be/uTN29kj7e-w"}, {"n": 405, "d": "2026-10-07", "m": 56, "type": "수련", "t": "Full Body Yoga Flow | 60 MIN Yoga For Flexibility, Mobility, & Strength", "lv": "강함", "url": "https://youtu.be/H4eimzWFcls"}, {"n": 552, "d": "2026-10-06", "m": 60, "type": "수련", "t": "60 Min Yoga Flow | Full Body Stretch", "lv": "강함", "url": "https://youtu.be/CfvceanvDk8"}, {"n": 431, "d": "2026-10-05", "m": 48, "type": "수련", "t": "45 Min Detox Yoga | Digestion & Metabolism Boost", "lv": "보통", "url": "https://youtu.be/fANDSiAyaRQ"}, {"n": 584, "d": "", "m": 46, "type": "수련", "t": "45 Min Full Body Yoga | Release Stress & Blissfully Realign Your Internal Energy", "lv": "보통", "url": "https://youtu.be/KnsprBvaGvI"}, {"n": 604, "d": "", "m": 67, "type": "수련", "t": "60 Min Detox Yoga Flow | Cleanse, Boost Energy", "lv": "보통", "url": "https://youtu.be/zr_htcuzUY8"}];
 const YG=[{"n": 519, "title": "한계를 존중하며, 넘어서기", "words": "의도 · 엣지 · 내맡김 · 느낌", "lines": ["나의 엣지를 존중하되, 새로운 가능성을 탐험하고 편안함의 영역을 넘어서는 것에도 열려 있는다.", "존중과 도전은 반대말이 아니다. 몸의 신호를 들을 줄 알 때, 비로소 안전하게 한 걸음 더 나갈 수 있다.", "날숨마다 몸이 이 자세 안으로 이완되도록 허락한다. 내 몸을, 내 신체적 긴장을 이 자세에 내맡긴다.", "이 순간 이 아사나가 어떻게 느껴지는지 — 제한은 어디에 있고, 공간은 어디에 있는지.", "어디에 있든 완벽해요. 오늘 고른 변형이 무엇이든, 그냥 숨으로 지나가요.", "양쪽이 완전히 다른 건 아주 정상이다.", "이 자세가 어떻게 보일지 걱정하지 않고, 그냥 어떻게 느껴지는지에 집중한다.", "우리는 얼굴에 많은 긴장, 많은 감정을 담아둔다. 이마를 이완하고, 눈은 무겁게, 턱은 느슨하게."], "qs": ["오늘 나의 엣지는 어디였나? 나는 그것을 존중했나, 조금 넘어서 보았나?", "오늘 '어떻게 보이는지'를 내려놓고 '어떻게 느껴지는지'를 택한 순간은 언제였나?"]}, {"n": 395, "title": "불꽃 속의 고요", "words": "불 · 현존 · 가슴 · 사랑", "lines": ["미래에 대한 걱정, 과거에 대한 걱정, 다른 사람들에 대한 생각 — 그것을 완전히 문 앞에 두고 온다. 그리고 매트 위에 나를 위해 만든 성소로 들어온다.", "이 순간 나에게 무엇이 필요하지? 무엇이 나를 기분 좋게 해줄까?", "어디에 있든, 그곳이 정확히 내가 있어야 할 곳이다. 억지로 하지 않는다. 그냥 느낀다.", "에고가 내 수련을 이끌게 두지 않는다. 에고를 잠재우고, 가슴을 깨운다.", "내가 원하는 모든 것은 그저 두려움의 반대편에 있다.", "사랑은 두려움보다 강하고, 두려움보다 힘이 세다.", "가슴을 통해 나의 길을 따라가면, 그것이 정확히 있어야 할 곳으로 이끈다.", "날숨과 함께 두려움을 놓아주고, 들숨과 함께 사랑을 맞아들인다."], "qs": ["가장 힘든 구간에서 나를 이끈 건 에고였나, 가슴이었나?", "원하는 것의 '두려움의 반대편'으로 가는 가장 작은 한 걸음은 무엇인가?"]}, {"n": 267, "title": "아침 명상 — 매일을 완벽하게 시작하는 10분", "words": "도착 · 감사 · 빈 종이 · 만트라", "lines": ["오늘은 아름다운 기회다. 나는 정확히 내가 있어야 할 곳에 있다. 나는 우주를 향해 나를 열고, 내 삶이 펼쳐질 방식을 신뢰한다.", "여기에 있을 수 있어서, 숨 쉴 수 있어서, 느낄 수 있어서 감사해요.", "오늘이 나의 마음에게, 나의 존재에게, 나의 행동에게, 그리고 나의 생각에게 아무것도 쓰이지 않은 빈 종이가 되기를.", "생각이 미래로 가 있는 걸 알아차릴 때마다, 생명의 숨과의 이 연결을 통해 그 마음을 다시 나 자신에게로 데려와요.", "이 아름답고 평화로운 에너지는 언제나 나와 함께 여기 있다. 마음을 잠잠하게 하고, 다시 연결될 한순간만 찾으면 된다."], "qs": ["오늘 아침, 눈을 떴을 때 가장 먼저 감사했던 것은 무엇이었나?", "오늘이라는 빈 종이에 단 한 줄을 쓴다면, 나는 무엇을 쓰고 싶은가?"]}, {"n": 516, "title": "하루를 놓아주는 저녁", "words": "놓아줌 · 파도 · 해방 · 안으로", "lines": ["오늘 무슨 일이 있었든, 그것을 놓아준다. 과거를 놓아준다. 그리고 나를 바로 지금 이 순간으로 데려온다.", "발견하면 — 인정하고, 기억해두고, 그리고 그냥 내맡긴다. 오늘 내 몸이 할 수 있는 것 이상으로 밀어붙이지 않는다.", "올라온 감정의 지점에 오면, 절대 참지 않는다.", "나의 평화, 나의 자기 사랑, 내가 느끼는 모든 기쁨과 지복은 진정으로 안에서부터 시작된다.", "살면서 어려움을 마주해도, 모든 것은 일시적이다. 하지만 내 안의 그 기쁨과 지복은 영원히 지속된다.", "무릎을 가슴으로 안는 것은 자기 사랑의 행위이고, 내 몸에 대한 감사다.", "이 순간에는 아무것도 중요하지 않다. 내 몸을 받아들이고, 내 존재를 받아들이고, 나를 받아들인다."], "qs": ["내 몸 어디에 오늘의 감정이 쌓여 있었나? 그것을 참았나, 흘려보냈나?", "오늘 하루 중, 나 말고는 누구도 빼앗아 갈 수 없는 기쁨은 어디에 있었나?"]}, {"n": 589, "title": "호흡의 플로우", "words": "호흡 · 소리 · 진동 · 중심", "lines": ["내 호흡의 소리를 따라간다. 마치 그것이 오늘 이 수련의 사운드트랙인 것처럼.", "힘으로 미는 대신, 숨이 나를 더 깊은 곳으로 안내하게 둔다.", "들이마시며 생명 에너지 프라나가 위로, 내쉬며 아파나가 내려와 몸을 땅으로 데려간다.", "몸이 풀리고, 신경계가 풀리고, 모든 것이 편안하고 아름다운 공간으로 돌아온다.", "정답은 없다. 오늘 내 몸이 어떤 숨을 부르는지 듣고 고르면 된다.", "온몸이 이완되고, 무겁고, 그리고 자유롭다.", "몸과 마음과 가슴과 영혼 사이의 중심."], "qs": ["오늘 내 몸은 어떤 숨을 불렀나? 우짜이, 3단 호흡, 아니면 자연스러운 숨?", "힘으로 밀지 않고, 숨이 나를 데려가게 둔 순간은 언제였나?"]}, {"n": 624, "title": "물처럼 흐르는 힘", "words": "물 · 흐름 · 의도 · 감사", "lines": ["오늘 나는 어떤 모습으로 매트 위에 도착하고 있나? 어디에 긴장을 붙잡고 있나?", "오늘 내 몸이 나에게 무엇을 요청하는지 듣는다. 움직이라는 안내가 오면 움직이고, 내면의 연결을 원할 때면 고요함을 찾는다.", "삶이 조금 너무 버겁고 벅차게 느껴질 때마다, 잠시 멈추고 그저 삶의 호흡과 연결된다.", "의식적으로 움직이는 것. 속도도 아니고, 끝내는 것도 아니고, 의도와 정렬과 나아감에 관한 것.", "날숨이 바로 이완하고 싶은 때다.", "떨림은 정상이다. 실패의 증거가 아니라 변화의 증거다.", "나의 수련에, 나의 헌신에, 나의 노력에 — 나 자신에게 고마워하며."], "qs": ["몸이 떨렸던 순간, 나는 그것을 실패로 읽었나, 강해지는 신호로 읽었나?", "이 수련을, 그리고 이 1년을 이어가게 하는 나의 의도는 무엇인가?"]}, {"n": 335, "title": "마음을 비우고, 새로운 좋은 습관을 시작하는 10분", "words": "감사 · 놓아줌 · 선택", "lines": ["잠시 나 자신에게 고맙다고 말해주세요. 이 자리에 와준 것에.", "고요히 있어도 된다고 나에게 허락을 주세요. 부드러워져도 된다고.", "무거움이 몸을 따라 아래로, 대지로 흘러 내려가도록 허락하세요.", "나 자신을 위해 새로운 현실을 만들겠다고 지금 결정하세요. 사랑과 친절, 기쁨과 연민, 그리고 평화로 가득 찬 현실을.", "오늘 나의 선택이 나의 내일을 만든다. My decisions today will define my tomorrow."], "qs": ["오늘 놓아주고 싶은 무거움은 무엇인가?", "오늘의 어떤 선택이 내일의 나를 만들까?"]}, {"n": 552, "title": "60분 플로우 — 불 · 물 · 흙 · 공기", "words": "불 · 물 · 흙 · 공기 · 중심", "lines": ["모든 것의 흐름에, 내 수련의 흐름에 그대로 나를 맡긴다.", "이것이 나의 중심이다. 이것이 나의 균형이다. 이것이 나의 코어다.", "힘을 쓰는 것과 힘을 빼는 것은 서로 반대가 아니다.", "지금 기분이 어떤가? 몸은 어떤가? 마음은 어떤가? 지금 이 순간 나는 어디에 있나?", "정말 녹아내리고, 항복하도록 허락한다.", "몸의 무게를 완전히 내맡긴다. 그 무게를 어머니 대지에게 돌려준다. 나는 안겨 있다. 나는 받쳐지고 있다.", "내가 필요한 것을 언제나 직관적으로 아는 몸의 지혜에 감사한다."], "qs": ["오늘 내 안에 불·물·흙·공기 중 무엇이 많고 무엇이 부족했나?"]}, {"n": 584, "title": "Realign Your Internal Energy", "words": "내면 에너지 · 명상 · 놓아주기", "lines": ["솔직하게란 — 지금 느끼는 것이 무엇이든, 그것과 함께 있도록 스스로에게 허락하는 것이다.", "나는 지금 여기에 있다.", "지금 이 순간에는 아무것도 붙잡고 있을 필요가 없다. 지금은 그저 놓아주는 시간이다.", "내 생각을 바라보는 관찰자가 된다 — 조수석에 앉아 그저 바라보는 것처럼.", "지금 이 순간에는 연약해져도 괜찮다. 모든 것을 내가 통제해야 할 필요는 없다.", "세상의 무게를 내가 모두 어깨에 짊어지고 있어야 한다고 느끼지 않아도 된다.", "모든 에너지가 서로 연결되어 있다. 모든 것이 균형을 이루고 있다."], "qs": ["오늘 내 에너지를 끌고 간 일은 무엇이었나? 물처럼 털어낼 수 있었나?"]}, {"n": 0, "title": "Detoxify Day 3 — 소화기관을 돌보는 요가", "words": "소화 · 호흡 · 인내 · 빛", "lines": ["저항이 느껴지면 그저 그곳으로 호흡하고, 몸이 호흡에 반응해 스스로 풀어줄 때, 그때 더 깊이 들어간다.", "오늘 얼마나 깊이 들어갔는지 걱정하지 않는다. 나는 지금 있어야 할 바로 그 자리에 있다.", "이 모든 것은 하나의 여정이고, 지금 이 자리 말고 서둘러 가야 할 곳은 없다.", "언제나 내 몸의 소리를 듣는다. 몸은 무엇이 좋고 무엇이 좋지 않은지 가장 잘 안다.", "몸에게 지금 정확히 필요한 것을 준다 — 인내, 사랑, 돌봄.", "하루 중 잠시라도 나를 가장 먼저 둔 것을 자랑스러워한다.", "All things are possible. 모든 것은 가능하다."], "qs": ["오늘 저항을 만난 곳은 어디였나? 그곳으로 숨을 보낼 수 있었나?"]}];
-const YBASE_DATE="2026-10-11", YTARGET=478, YEND="2027-04-30";
+let YBASE_DATE="2026-10-11";const YTARGET=478, YEND="2027-04-30";
 const YMONTH={"2026-10":69,"2026-11":137,"2026-12":207,"2027-01":277,"2027-02":340,"2027-03":410,"2027-04":478};
 const yAll=()=>YG.flatMap(g=>g.lines.map(t=>({t,src:(g.n?"#"+g.n+" · ":"")+g.title})));
 let yOff=0;
 const yFav=()=>LS.get("gd-yfav",[]);
 function yToggleFav(t,src){let f=yFav();f=f.some(x=>x.t===t)?f.filter(x=>x.t!==t):[{t,src,date:key(new Date())},...f];LS.set("gd-yfav",f);renderYoga()}
 const yIsFav=t=>yFav().some(x=>x.t===t);
+// 노션 실시간 연결 (/api/yoga) — 실패하면 마지막으로 받은 기록, 그것도 없으면 내장 기록
+const YLIVE={at:""};
+function ySet(log,at){if(!Array.isArray(log)||!log.length)return;log=log.filter(x=>x.t).sort((a,b)=>(b.d||"").localeCompare(a.d||"")||(b.n||0)-(a.n||0));
+  YLOG.splice(0,YLOG.length,...log);YLIVE.at=at||"";const last=log.find(x=>x.d);if(last&&last.d>YBASE_DATE)YBASE_DATE=last.d}
 function yCount(){let c=YLOG.filter(x=>x.type==="수련"||x.type==="명상").length;Object.keys(days).forEach(k=>{if(k>YBASE_DATE&&days[k].yoga)c+=+days[k].yoga.n||0});return c}
 function renderYoga(){
   const k=key(new Date()),v=get(k),y=Object.assign({n:0,nums:"",body:"",feel:"",line:""},v.yoga||{});
@@ -1520,8 +1546,8 @@ function renderYoga(){
     ${g.lines.map(t=>`<div class="yline"><p>${esc(t)}</p><button class="heart" aria-pressed="${yIsFav(t)}" data-t="${esc(t)}" data-src="${esc((g.n?"#"+g.n+" · ":"")+g.title)}" aria-label="와닿은 문장으로 저장">${yIsFav(t)?"♥":"♡"}</button></div>`).join("")}
     ${g.qs.length?`<div class="sub" style="margin-top:6px"><b>오늘 나에게 묻기</b><br>${g.qs.map(esc).join("<br>")}</div>`:""}</details>`).join("");
   const done=YLOG.filter(x=>x.d).length;
-  $("#yLogCount").textContent=`${YLOG.length}편 완료`;
-  $("#yLog").innerHTML=YLOG.map(x=>`<div class="ylog"><span class="when">${x.d?(+x.d.slice(5,7))+"/"+(+x.d.slice(8)):"—"}</span><span class="no">#${x.n}</span><a href="${x.url}" target="_blank" rel="noopener">${esc(x.t)} <span class="sub">· ${x.m}분 · ${x.type}${YG.some(g=>g.n===x.n)?" · 가이드 ✓":""}</span></a></div>`).join("");
+  $("#yLogCount").textContent=`${YLOG.length}편 완료${YLIVE.at?" · 노션 실시간":""}`;
+  $("#yLog").innerHTML=YLOG.map(x=>`<div class="ylog"><span class="when">${x.d?(+x.d.slice(5,7))+"/"+(+x.d.slice(8)):"—"}</span><span class="no">#${x.n}</span><a href="${x.url}" target="_blank" rel="noopener">${esc(x.t)} <span class="sub">· ${x.m}분 · ${x.type}${YG.some(g=>g.n===x.n)?" · 가이드 ✓":""}</span>${x.line?`<span class="sub" style="display:block;font-style:italic">“${esc(x.line)}”</span>`:""}</a></div>`).join("");
 }
 function yPatch(o){const k=key(new Date());const y=Object.assign({n:0,nums:"",body:"",feel:"",line:""},get(k).yoga||{},o);patch(k,{yoga:y})}
 $("#yPlus").onclick=()=>{yPatch({n:(+((get(key(new Date())).yoga||{}).n)||0)+1});renderYoga()};
@@ -1672,6 +1698,18 @@ function open(){
 }
 // 비밀번호 없이 바로 열기
 open();
+// ---------- 노션 실시간 연결 (/api/notion) ----------
+// 받아온 기록은 폰에도 저장해 두어서, 인터넷이 없어도 마지막으로 받은 내용이 보여요.
+function archSet(d){if(Array.isArray(d)&&d.length){archive=d}}
+try{const c=LS.get("gd-ylog",null);if(c)ySet(c.data,c.at)}catch(_){}
+try{const c=LS.get("gd-arch",null);if(c)archSet(c.data)}catch(_){}
+let notionAt="";
+function syncNotion(){Promise.all(["yoga","archive"].map(x=>fetch("/api/notion?s="+x,{cache:"no-store"}).then(r=>r.ok?r.json():null).catch(()=>null))).then(([y,a])=>{
+  if(y&&y.data){ySet(y.data,y.at);LS.set("gd-ylog",{data:y.data,at:y.at})}
+  if(a&&a.data){archSet(a.data);LS.set("gd-arch",{data:a.data,at:a.at})}
+  if(y||a){notionAt=new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});$("#sync").textContent="노션과 연결됨 · "+notionAt;try{rerender()}catch(_){}}})}
+syncNotion();
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)syncNotion()});
 // 밤에는 SATS가 먼저 보이도록
 try{const k=(()=>{const n=new Date();if(n.getHours()<4){n.setDate(n.getDate()-1)}return key(n)})();if(location.hash==="#sats"||(isNight()&&!get(k).sats)){show("today");if(location.hash==="#sats")setTimeout(()=>$("#satsCard").scrollIntoView({behavior:"smooth",block:"start"}),300)}}catch(_){}
 if(!storageOK){$("#sync").textContent="이 화면은 저장이 막혀 있어요 — 크롬·사파리에서 주소로 열어주세요";}
