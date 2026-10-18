@@ -409,6 +409,27 @@ body[data-tab="vision"]{--acc:#6B5B4B}
 #reader #rdBody p{margin:0 0 12px}#reader #rdBody h3{font:700 17px var(--sys);margin:18px 0 8px}
 #reader #rdBody blockquote{margin:0 0 12px;padding:8px 12px;border-left:3px solid var(--gold);background:var(--card);border-radius:8px}
 #reader #rdBody ul{margin:0 0 12px;padding-left:20px}
+
+/* ===== 두 번째 화살 · 감정 기록 ===== */
+.arrow .mwo{display:flex;gap:4px}.arrow .mwo button{border:0;border-radius:999px;background:var(--fill);color:var(--label2);font:600 12px var(--sys);padding:5px 9px;cursor:pointer}
+.arrow .mwo button[aria-pressed="true"]{background:var(--blue);color:#fff}
+#freeSeg{flex-wrap:wrap}
+.letsit{border-top:1px solid var(--sep);padding:10px 0 4px}.letsit summary{cursor:pointer;font:600 15px var(--sys)}
+
+.card.arrow .lead2{font:600 17px/1.45 var(--sys);margin:0}
+.card.arrow .why{font-size:13.5px;color:var(--label2);line-height:1.6}
+.arrow .steps5{display:grid;gap:10px}
+.arrow .steps5 .q label b{color:var(--blue)}
+.arrow .emo{display:flex;flex-wrap:wrap;gap:6px}
+.arrow .seg{display:flex;background:var(--fill);border-radius:10px;padding:3px;gap:3px}
+.arrow .seg button{flex:1;border:0;background:transparent;border-radius:8px;padding:7px;font:600 13px var(--sys);color:var(--label2);cursor:pointer}
+.arrow .seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.arrow .exit{background:var(--fill);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.7}
+.arrow .exit b{color:var(--blue)}
+.arrow .fe{border-top:1px solid var(--sep);padding:9px 0 2px;display:grid;gap:3px;font-size:14px;line-height:1.55}
+.arrow .fe .tm{font:600 11.5px var(--sys);color:var(--label2)}
+.arrow .fe .act{color:var(--blue);font-weight:600}
+.arrow .wise{font:500 14.5px/1.6 var(--sys);color:var(--ink);background:var(--fill);border-radius:12px;padding:10px 12px;margin:0}
 /* ===== SATS · 잠들기 전 5분 ===== */
 .card.sats .slib{display:grid;gap:6px}
 .card.sats .sitem{display:grid;gap:2px;text-align:left;border:0;border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.06);color:#E8EBF7;cursor:pointer;font:inherit}
@@ -532,6 +553,8 @@ body[data-tab="vision"]{--acc:#6B5B4B}
       <div class="sub" id="gateHint"></div>
     </div>
 
+    <div class="card arrow" id="arrowCard"></div>
+
     <div class="card star" id="starCard"></div>
 
     <div class="card teach" id="todayTeach"></div>
@@ -555,6 +578,7 @@ body[data-tab="vision"]{--acc:#6B5B4B}
     <div class="card">
       <span class="label">마감 한 줄 · 일기</span>
       <div class="q"><label for="anchorMoment">오늘 나를 버리지 않은 순간은</label><input type="text" id="anchorMoment" placeholder="___"></div>
+      <div class="q"><label for="letgoIn">오늘 내려놓은 집착 하나 <span class="sub">— 아무래도 상관없다</span></label><input type="text" id="letgoIn" placeholder="예: 답장이 늦는 것에 대한 서운함"></div>
       <div class="q"><label for="diary">오늘의 한 장면</label><textarea id="diary" style="min-height:110px" placeholder="짧아도 괜찮고, 길어도 괜찮다."></textarea></div>
     </div>
 
@@ -870,7 +894,8 @@ body[data-tab="vision"]{--acc:#6B5B4B}
   </section>
 
   <section id="tab-free" class="stack" hidden>
-    <div class="seg" id="freeSeg"><button data-v="shi" aria-pressed="true">시헝이 · 8가르침</button><button data-v="path" aria-pressed="false">팔정도 · 8가지 길</button></div>
+    <div class="seg" id="freeSeg"><button data-v="shi" aria-pressed="true">시헝이 · 8가르침</button><button data-v="path" aria-pressed="false">팔정도 · 8가지 길</button><button data-v="let" aria-pressed="false">뭐 어때 · 무집착</button></div>
+    <div id="letView" class="stack" hidden></div>
     <div id="pathView" class="stack" hidden></div>
     <div id="shiView" class="stack">
     <div class="card">
@@ -989,6 +1014,12 @@ const ZHUANG=[
 {h:"水靜猶明, 而況精神",r:"수정유명, 이황정신",t:"물도 고요하면 밝게 비추는데",b:"고요는 아무것도 하지 않는 상태가 아니라 가장 잘 보이는 상태다. 먼저 자기가 보이고, 그다음에 길이 보인다."}
 ];
 const EXTRA_INS=[
+{text:"성공해도 실패해도, 사랑받아도 미움받아도, 인정받든 받지 못하든 — 나의 가치는 변하지 않는다.",src:"뭐 어때 · 무집착의 열쇠"},
+{text:"바다 깊은 곳은 아무리 폭풍이 몰아쳐도 고요하다. 나는 파도가 아니라 그 깊은 곳에 존재의 기반을 둔다.",src:"뭐 어때 · 배와 바다"},
+{text:"감정은 날씨다. 비가 오기도 해가 나기도 한다. 하지만 날씨가 어떻든 하늘은 늘 그 위에 있다 — 나의 가치는 그 하늘이다.",src:"뭐 어때 · 날씨와 하늘"},
+{text:"집착은 두려움과 한 세트다. 가진 것은 잃을까, 없는 것은 얻지 못할까.",src:"뭐 어때 · 집착의 정체"},
+{text:"최선을 다하되, 결과에 존재 가치를 걸지 않는다.",src:"뭐 어때 · 정수"},
+{text:"‘상관없어지지 않는 나’를 탓하는 순간, 그것도 또 하나의 집착이다. 알아차렸다면 이미 진전이다.",src:"뭐 어때 · 흔한 함정"},
 {text:"편도체는 위협을 감지할 뿐, 공포라는 느낌은 그 위에서 조립된다. 심장이 두근거려도 ‘나는 위험하다’는 해석과 분리할 수 있다.",src:"인사이트 · 르두 『불안』"},
 {text:"내가 찾던 안전은 밖에 있는 돈이나 사람이나 결과가 아니라 한 번의 호흡 속에 있었는지도 모른다.",src:"존재 연습"},
 {text:"감정은 허용한다. 생각은 바라본다. 현실은 확인한다. 행동은 내가 선택한다.",src:"트랜서핑 강령"},
@@ -1006,7 +1037,7 @@ let cur=key(new Date());
 let calMonth=new Date(parse(cur).getFullYear(),parse(cur).getMonth(),1);
 let kind="발행", themeFilter="", declIdx=0, lineSeed=Math.floor(Math.random()*1000);
 
-const blank=()=>({sats:false,satsScene:"",dump:"",b4:[false,false,false,false],pathNote:"",pathDone:false,beingNow:"",beingBody:"",breaths:0,weather:[],teach:"",body:null,ns:"",star:"",starText:"",q:["","","","",""],moment:"",diary:"",outputs:[]});
+const blank=()=>({mwo:0,letgo:"",feel:[],sats:false,satsScene:"",dump:"",b4:[false,false,false,false],pathNote:"",pathDone:false,beingNow:"",beingBody:"",breaths:0,weather:[],teach:"",body:null,ns:"",star:"",starText:"",q:["","","","",""],moment:"",diary:"",outputs:[]});
 const get=k=>Object.assign(blank(),days[k]||{});
 
 // ---------- saving (one write at a time per doc, debounced) ----------
@@ -1183,6 +1214,54 @@ function satsStep(){
 function closeSats(){clearInterval(satsT);clearInterval(satsCueT);SND.stop();$("#satsOv").hidden=true;try{satsLock&&satsLock.release()}catch(_){}satsLock=null;renderSats()}
 $("#ovNext").onclick=()=>{if(satsI>=SATS_STEPS.length-1){closeSats();return}satsI++;satsStep()};
 $("#ovClose").onclick=closeSats;
+// ---------- 두 번째 화살 · 감정 알아차림 기록 (그때그때) ----------
+const CLINGS=["타인의 평가","사랑받고 싶음","인정·성과","돈","완벽함","나이·외모","비교","통제"];let arrowCling=[];
+const EMOS=["화","짜증","서운함","불안","답답함","무력감","슬픔","외로움","수치심","억울함","피곤함","두려움"];
+const ARROW_WISE=["또 평가를 구하고 있구나 — 아무래도 상관없다.","또 사랑받고 싶어지는구나 — 아무래도 상관없다.","감정은 날씨, 나의 가치는 그 위의 하늘.","첫 번째 화살은 피할 수 없어도, 두 번째 화살은 내가 쏘지 않을 수 있다.","감정은 고칠 대상이 아니라, 먼저 들어줄 손님이다.","생각은 사실이 아니라, 지나가는 해석이다.","감정은 움직이는 에너지다. 막지 않으면 지나간다.","반응하기 전에 숨 한 번. 그 틈에서 나는 선택한다.","“아직 화난다. 지금은 대화하지 않고 쉬겠다.” 이것도 충분한 선택이다.","나는 감정이 아니라, 감정을 바라보는 사람이다.","내 필요를 아는 순간, 비난은 요청으로 바뀐다."];
+let arrowMode=(()=>{try{return localStorage.getItem("gd-arrow-mode")||"5"}catch(_){return "5"}})(),arrowEmo=[],arrowOpen=false;
+function renderArrow(){const el=$("#arrowCard");if(!el)return;if(el.contains(document.activeElement)&&/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;
+  const v=get(cur),F=v.feel||[],W=ARROW_WISE[((dayN(cur))%ARROW_WISE.length+ARROW_WISE.length)%ARROW_WISE.length];
+  const form=arrowOpen?`
+   <div class="seg"><button data-am="5" aria-pressed="${arrowMode==="5"}">다섯 줄</button><button data-am="3" aria-pressed="${arrowMode==="3"}">너무 화날 땐 세 줄</button></div>
+   ${arrowMode==="5"?`<div class="steps5">
+     <div class="q"><label for="afFact"><b>1. 사실</b> · 무슨 일이 있었지? 카메라에 찍힐 행동이나 들린 말</label><input type="text" id="afFact" placeholder="예: 노크 없이 방 문을 열었다"></div>
+     <div class="q"><label for="afJudge"><b>2. 해석</b> · 어떤 생각을 붙였지? 머릿속 말 그대로</label><input type="text" id="afJudge" placeholder="예: 왜 내 공간을 존중하지 않지?"></div>
+     <div class="q"><label><b>3. 감정</b> · 어떤 감정이 들었지?</label><div class="emo">${EMOS.map(e=>`<button class="chip" data-emo="${e}" aria-pressed="${arrowEmo.includes(e)}">${e}</button>`).join("")}</div><input type="text" id="afEmo" placeholder="다른 감정이 있으면"></div>
+     <div class="q"><label><b>+ 집착</b> · 무엇을 얻고 싶거나 지키고 싶었지?</label><div class="emo">${CLINGS.map(e=>`<button class="chip" data-cl="${e}" aria-pressed="${arrowCling.includes(e)}">${e}</button>`).join("")}</div><div class="sub" style="margin-top:4px">알아차렸다면 마음속으로 — <b>"아무래도 상관없다."</b> 그리고 할 일은 담담하게.</div></div>
+     <div class="q"><label for="afNeed"><b>4. 필요</b> · 나에게 무엇이 필요했지?</label><input type="text" id="afNeed" placeholder="예: 방해받지 않는 요가 시간, 사생활"></div>
+     <div class="q"><label for="afAct"><b>5. 선택</b> · 지금 나에게 이로운 작은 행동 하나</label><input type="text" id="afAct" placeholder="예: 말투는 수습하고, 노크 요청은 유지한다"></div></div>`
+   :`<div class="steps5"><div class="q"><label>지금 나는 <b>___</b>해서 <b>___</b>한 마음이다</label><div class="emo">${EMOS.map(e=>`<button class="chip" data-emo="${e}" aria-pressed="${arrowEmo.includes(e)}">${e}</button>`).join("")}</div><input type="text" id="afFact" placeholder="지금 나는 ___해서"></div>
+     <div class="q"><label for="afNeed">내가 필요한 건 <b>___</b>이다</label><input type="text" id="afNeed" placeholder="예: 조용함, 혼자만의 시간"></div>
+     <div class="q"><label for="afAct">지금 내가 할 수 있는 건 <b>___</b>이다</label><input type="text" id="afAct" placeholder="예: 대화하지 않고 쉰다, 숨 3번"></div></div>`}
+   <div class="sub">고치기 전에 충분히 들어주기. 깨달음까지 얻지 않아도 돼요.</div>
+   <div class="row"><button class="primary" id="afSave" style="flex:1">기록하고 내려놓기</button><button class="ghost" id="afCancel">닫기</button></div>`
+  :`<button class="primary" id="afOpen">🏹 지금 감정 기록하기 · 1분</button>`;
+  el.innerHTML=`<div class="row" style="justify-content:space-between;align-items:center"><span class="label">두 번째 화살 · 감정 알아차림</span><span class="status">${F.length?`오늘 ${F.length}번 알아차림`:"그때그때"}</span></div>
+   <p class="wise">${esc(W)}</p>
+   <div class="row" style="justify-content:space-between;align-items:center"><span class="sub">하루 세 번 멈춤 · <b>"뭐 어때"</b>라고 말해준 횟수</span><span class="mwo">${[0,1,2].map(i=>`<button data-mwo="${i}" aria-pressed="${(+v.mwo||0)>i}" aria-label="뭐 어때 ${i+1}번">${["아침","낮","밤"][i]}</button>`).join("")}</span></div>
+   <details><summary class="sub" style="cursor:pointer">빠져나오는 4단계 · 90초</summary><div class="exit" style="margin-top:8px">
+     <b>멈춤</b> — 반응하기 전에 몸을 세운다. 휴대폰·말을 잠시 내려놓는다.<br>
+     <b>숨 3번</b> — 길게 내쉬기. 어깨와 턱의 힘을 뺀다.<br>
+     <b>이름 붙이기</b> — "지금 화가 왔구나." 감정은 내가 아니라 지나가는 날씨.<br>
+     <b>선택</b> — 내 필요를 지키면서 나에게 이로운 작은 행동 하나.</div></details>
+   ${form}
+   ${F.length?F.map((f,i)=>`<div class="fe"><span class="tm">${esc(f.t)} · ${f.mode==="3"?"세 줄":"다섯 줄"} <button class="x" data-fdel="${i}" aria-label="삭제" style="float:right">×</button></span>
+     ${f.fact?`<span>${esc(f.fact)}</span>`:""}${f.judge?`<span class="sub">해석 · ${esc(f.judge)}</span>`:""}
+     ${f.emo?`<span class="sub">감정 · ${esc(f.emo)}</span>`:""}${f.cling?`<span class="sub">집착 · ${esc(f.cling)} → 아무래도 상관없다</span>`:""}${f.need?`<span class="sub">필요 · ${esc(f.need)}</span>`:""}${f.act?`<span class="act">→ ${esc(f.act)}</span>`:""}</div>`).join(""):""}`;
+}
+$("#arrowCard").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  if(b.id==="afOpen"){arrowOpen=true;arrowEmo=[];arrowCling=[];renderArrow();setTimeout(()=>{const i=$("#afFact");i&&i.focus()},50);return}
+  if(b.id==="afCancel"){arrowOpen=false;renderArrow();return}
+  if(b.dataset.am){const keep={};["afFact","afJudge","afEmo","afNeed","afAct"].forEach(id=>{const x=$("#"+id);if(x)keep[id]=x.value});arrowMode=b.dataset.am;try{localStorage.setItem("gd-arrow-mode",arrowMode)}catch(_){}renderArrow();Object.entries(keep).forEach(([id,v])=>{const x=$("#"+id);if(x)x.value=v});return}
+  if(b.dataset.cl){const x=b.dataset.cl;arrowCling=arrowCling.includes(x)?arrowCling.filter(y=>y!==x):[...arrowCling,x];b.setAttribute("aria-pressed",arrowCling.includes(x));return}
+  if(b.dataset.mwo!=null){const n=+b.dataset.mwo+1,c=+get(cur).mwo||0;patch(cur,{mwo:c>=n?n-1:n});renderArrow();return}
+  if(b.dataset.emo){const x=b.dataset.emo;arrowEmo=arrowEmo.includes(x)?arrowEmo.filter(y=>y!==x):[...arrowEmo,x];b.setAttribute("aria-pressed",arrowEmo.includes(x));return}
+  if(b.dataset.fdel!=null){if(!b.dataset.sure){b.dataset.sure=1;b.textContent="삭제?";return}const F=[...get(cur).feel];F.splice(+b.dataset.fdel,1);patch(cur,{feel:F});renderArrow();return}
+  if(b.id==="afSave"){const g=id=>{const x=$("#"+id);return x?x.value.trim():""};
+    const emo=[...arrowEmo,g("afEmo")].filter(Boolean).join(", ");const f={t:new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"}),mode:arrowMode,cling:arrowCling.join(", "),fact:g("afFact"),judge:g("afJudge"),emo,need:g("afNeed"),act:g("afAct")};
+    if(!f.fact&&!emo&&!f.need&&!f.act){$("#afFact").focus();return}
+    patch(cur,{feel:[...(get(cur).feel||[]),f]});arrowOpen=false;arrowEmo=[];arrowCling=[];renderArrow();return}
+});
 function renderToday(){
   try{updateLightPill()}catch(_){}
   const k=cur,v=get(k),p=PLAN[k];
@@ -1216,14 +1295,16 @@ function renderToday(){
     <hr class="thin"><div class="row" style="justify-content:space-between;align-items:baseline"><span class="label">오늘의 바른 길 · 팔정도</span><button class="chip" id="goPath">자세히</button></div>
     <div style="font-size:14px"><b>${PATH[pathIdx(k)].n}</b> <span class="sub">${PATH[pathIdx(k)].h}</span> — ${esc(PATH[pathIdx(k)].a)}${v.pathDone?" <span style='color:var(--acc)'>✓</span>":""}</div>`;
   $("#qs").innerHTML=QUESTIONS.map((q,i)=>`<div class="q"><label for="q${i}">${i+1}. ${esc(q)}</label><textarea id="q${i}" data-i="${i}" placeholder="오늘의 생각을 적어봐…">${esc(v.q[i]||"")}</textarea></div>`).join("");
-  $("#anchorMoment").value=v.moment||"";$("#diary").value=v.diary||"";
+  $("#anchorMoment").value=v.moment||"";$("#letgoIn").value=v.letgo||"";$("#diary").value=v.diary||"";
   $("#copyFallback").hidden=true;
   try{renderSats()}catch(_){}
+  try{renderArrow()}catch(_){}
 }
 function renderOutputs(){
   const v=get(cur);
   $("#outList").innerHTML=v.outputs.length?v.outputs.map((o,i)=>`<li><span class="kind ${o.kind}">${o.kind==="반응"?"고객 반응":o.kind}</span><span class="t">${esc(o.text)}</span><button class="x" data-del="${i}" aria-label="삭제">×</button></li>`).join(""):`<li class="empty">아직 없음</li>`;
 }
+$("#letgoIn").addEventListener("input",e=>patch(cur,{letgo:e.target.value}));
 $("#bodyScale").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const n=+b.dataset.v;patch(cur,{body:get(cur).body===n?null:n});renderToday()});
 $("#nsChips").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;patch(cur,{ns:get(cur).ns===b.dataset.v?"":b.dataset.v});renderToday()});
 $("#starCard").addEventListener("click",e=>{const b=e.target.closest("[data-star]");if(!b)return;patch(cur,{star:get(cur).star===b.dataset.star?"":b.dataset.star});renderToday()});
@@ -1373,12 +1454,12 @@ const BODY100="2026-10-12";
 const DOM=[
 {n:"Strong",s:"근력·요가",tab:"yoga",f:v=>!!((v.yoga&&v.yoga.n)||(v.b4||[])[0]),link:"YOGA 탭 수련 기록 · 몸의 질 체크"},
 {n:"Radiant",s:"영양·수면·피부",tab:"map",f:v=>!!(v.b4||[])[1],link:"몸의 질 100일 체크"},
-{n:"Calm",s:"호흡·신경계",tab:"being",f:v=>!!(v.breaths||v.sats||v.ns==="안전"||(v.b4||[])[2]),link:"BEING 호흡 · 밤의 SATS · 오늘 신경계 ‘안전’"},
+{n:"Calm",s:"호흡·신경계",tab:"being",f:v=>!!(v.breaths||v.sats||(v.feel||[]).length||v.ns==="안전"||(v.b4||[])[2]),link:"BEING 호흡 · 밤의 SATS · 오늘 신경계 ‘안전’"},
 {n:"BEING",s:"존재 연습",tab:"being",f:v=>!!((v.beingNow||"").trim()||(v.beingBody||"").trim()),link:"BEING 존재 일지"},
 null,
 {n:"Alive",s:"즐거움·자유",tab:"map",f:v=>!!(v.b4||[])[3],link:"몸의 질 100일 체크"},
 {n:"CREATE",s:"★·발행·창조",tab:"today",f:v=>!!(v.star||(v.outputs||[]).length),link:"오늘 ★ · 오늘의 산출"},
-{n:"FREEDOM",s:"가르침·팔정도",tab:"free",f:v=>!!((v.teach||"").trim()||v.pathDone||(v.pathNote||"").trim()),link:"오늘의 가르침 · 오늘의 바른 길"},
+{n:"FREEDOM",s:"가르침·팔정도",tab:"free",f:v=>!!((v.teach||"").trim()||v.pathDone||(v.pathNote||"").trim()||(v.letgo||"").trim()||v.mwo),link:"오늘의 가르침 · 오늘의 바른 길 · 뭐 어때"},
 {n:"REFLECT",s:"기록·일기",tab:"today",f:v=>!!((v.diary||"").trim()||(v.q||[]).some(x=>(x||"").trim())||(v.moment||"").trim()),link:"Founder Reflection · 한 장면"}
 ];
 function gains(v){v=v||{};const g=[];const add=(t,n)=>{if(n>0)g.push([t,n])};
@@ -1387,7 +1468,7 @@ function gains(v){v=v||{};const g=[];const add=(t,n)=>{if(n>0)g.push([t,n])};
   add("한 장면",(v.diary||"").trim()?1:0);add("나를 버리지 않은 순간",(v.moment||"").trim()?1:0);
   add("가르침",(v.teach||"").trim()?1:0);add("바른 길",v.pathDone?1:0);add("호흡",Math.min(3,+v.breaths||0));
   add("브레인 덤프",(v.dump||"").trim()?1:0);add("존재 일지",((v.beingNow||"").trim()||(v.beingBody||"").trim())?1:0);add("요가",Math.min(4,2*(+((v.yoga||{}).n)||0)));
-  add("몸의 질",(v.b4||[]).filter(Boolean).length);add("SATS",v.sats?2:0);return g}
+  add("몸의 질",(v.b4||[]).filter(Boolean).length);add("SATS",v.sats?2:0);add("두 번째 화살 멈춤",Math.min(2,(v.feel||[]).length));add("뭐 어때",Math.min(3,+v.mwo||0));add("내려놓은 집착",(v.letgo||"").trim()?1:0);return g}
 const pts=v=>gains(v).reduce((a,[,n])=>a+n,0);
 function totalLight(){return Object.values(days).reduce((a,v)=>a+pts(v),0)}
 function lvOf(t){return Math.floor(Math.sqrt(t/4))}
@@ -1736,10 +1817,35 @@ $("#pathView").addEventListener("input",e=>{if(e.target.id==="pathNote")patch(ke
 $("#pathView").addEventListener("click",e=>{if(e.target.id!=="pathDone")return;const k=key(new Date());patch(k,{pathDone:!get(k).pathDone});renderPath()});
 
 // ---------- 내면의 자유 ----------
+// ---------- 뭐 어때 · 무집착의 열쇠 ----------
+const LET_SIT=[["발표·프레젠테이션","잘하든 못하든 나의 본질적 가치는 변하지 않는다.","불필요한 긴장이 풀리고 준비한 내용에 집중한다."],["연애·관계","상대가 나를 좋아하든 안 하든 상관없다.","가장 자연스럽고 매력적인 내가 나온다."],["돈·투자","계획과 준비는 한다. 다만 돈이 많든 적든 나의 가치는 변하지 않는다.","냉정하고 합리적인 결정, 불안에서 해방."],["나이·외모","나이가 들어도, 주름이 생겨도 상관없다.","사회적 편견에서 자유로워져 나만의 아름다움을 발견한다."],["비교·SNS","남들이 어떻게 살든 상관없다. 나는 나의 속도로 간다.","비교의 함정에서 벗어나 내 인생을 온전히 산다."],["사업·발행","반응이 있든 없든 상관없다. 나는 오늘의 것을 담담하게 내놓는다.","결과가 아니라 과정에 몰입할 때, 본래 실력이 나온다."]];
+function renderLet(){
+  const log=Object.keys(days).filter(k=>(days[k].letgo||"").trim()||(days[k].feel||[]).some(f=>f.cling)).sort().reverse().slice(0,30);
+  const cnt={};Object.values(days).forEach(v=>(v.feel||[]).forEach(f=>(f.cling||"").split(", ").filter(Boolean).forEach(c=>cnt[c]=(cnt[c]||0)+1)));
+  const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);
+  $("#letView").innerHTML=`<div class="card" style="text-align:center"><span class="label">집착 · 자기 가치 · 해방</span><h2 style="font-size:21px">모든 집착에서 벗어나는 열쇠는<br>"뭐 어때"에 있다</h2><div class="sub">아무래도 상관없다 — 자기 가치와 외부 조건 사이의 고리를 끊는 기술</div></div>
+   <div class="card"><span class="label">이것은 포기가 아니다</span><p class="anchor">성공해도 실패해도 나의 가치는 변하지 않는다.<br>사랑받아도 미움받아도 나의 가치는 변하지 않는다.<br>인정받든 받지 못하든 나의 가치는 변하지 않는다.</p>
+     <div class="sub" style="line-height:1.7">집착의 정체는 두려움이다. 가진 것은 잃을까, 없는 것은 얻지 못할까. 더 가져도 사라지지 않는다 — 쾌락의 쳇바퀴처럼 곧 적응하고 다시 부족해진다. 그래서 채우는 게 아니라 <b>고리를 끊는다</b>.</div></div>
+   <div class="card"><span class="label">배와 바다</span><p style="margin:0;line-height:1.75;font-size:15px">파도가 높으면 배는 위로, 낮으면 아래로. 대부분은 이 배처럼 타인의 평가·성과·돈의 파도에 자존감이 오르내린다. 하지만 바다 깊은 곳은 폭풍이 몰아쳐도 고요하다. "아무래도 상관없다"는 그 깊은 곳에 존재의 기반을 두는 것.</p>
+     <p class="wise" style="margin-top:6px">감정은 날씨. 날씨가 어떻든 하늘은 늘 그 위에 있다 — 나의 가치는 그 하늘이다.</p></div>
+   <div class="card"><span class="label">몸에 익히는 세 단계 · 매일 조금씩</span>
+     <div class="exit" style="line-height:1.75"><b>1. 알아차린다</b> — 좋아요·평가·말 한마디에 마음이 가라앉을 때. "아, 지금 나는 타인의 평가에 집착하고 있구나." 이름 붙이기만으로 편도체가 가라앉는다.<br>
+     <b>2. 마음속으로 말한다</b> — "또 평가를 구하고 있구나 — 아무래도 상관없다." 생각의 고리를 끊는 스위치. 반복할수록 회로가 바뀐다.<br>
+     <b>3. 행동은 담담하게 계속한다</b> — 하지 않겠다는 뜻이 아니다. 할 일은 하고, 결과에 존재 가치를 걸지 않을 뿐.</div>
+     <div class="sub">오늘 탭 → 두 번째 화살 카드에서 하루 세 번(아침·낮·밤) "뭐 어때"를 체크하고, 마감 한 줄에 '오늘 내려놓은 집착'을 남겨요.</div></div>
+   <div class="card"><span class="label">가장 흔한 함정</span><p style="margin:0;line-height:1.7;font-size:15px">"왜 나는 아직도 상관없어지지 않지?" 하며 나를 탓하는 순간, '집착하지 않는 상태'에 집착하는 새 덫이다. 다시 올라와도 괜찮다. 알아차렸다면 이미 진전. 완벽하게 하려는 마음도 내려놓을 대상이다.</p></div>
+   <div class="card"><span class="label">상황별 · 나에게 적용하기</span>${LET_SIT.map(x=>`<details class="letsit"><summary>${esc(x[0])}</summary><p style="margin:6px 0 2px;line-height:1.65">"${esc(x[1])}"</p><div class="sub">→ ${esc(x[2])}</div></details>`).join("")}</div>
+   <div class="card"><span class="label">무책임도, 감정 억압도 아니다</span><p style="margin:0;line-height:1.7;font-size:15px">해야 할 일은 한다 — 다만 결과에 나의 존재 가치를 걸지 않을 뿐. 슬플 땐 슬퍼하고 화날 땐 화를 느낀다. 다만 끌려다니지 않고 지나가도록 허용한다.</p>
+     <div class="sub" style="margin-top:6px">검증의 기준은 믿음이 아니라, '해 보고 내 마음이 가벼워지는가'.</div></div>
+   <div class="card"><span class="label">나의 집착 지도</span>${top.length?`<div class="row">${top.map(([c,n])=>`<span class="chip" style="cursor:default">${esc(c)} · ${n}</span>`).join("")}</div><div class="sub">가장 자주 올라오는 것이 오늘 "뭐 어때"를 가장 많이 말해줄 자리예요.</div>`:`<div class="empty">두 번째 화살 기록에서 '집착'을 고르면 여기에 쌓여요.</div>`}
+     ${log.length?`<hr class="thin">`+log.map(k=>`<div class="arch-item" data-k="${k}" style="cursor:pointer"><span class="t">${fmt(k)}${days[k].mwo?` · 뭐 어때 ${days[k].mwo}번`:""}</span><span class="l">${esc(days[k].letgo||(days[k].feel||[]).map(f=>f.cling).filter(Boolean).join(" · "))} — 아무래도 상관없다</span></div>`).join(""):""}</div>
+   <p class="anchor" style="text-align:center;border:0;padding:4px 0">최선을 다하되, 결과에 존재 가치를 걸지 않는다.<br>아무래도 상관없다 — 그 여백에서 비로소 가볍게 산다.</p>`}
+$("#letView").addEventListener("click",e=>{const b=e.target.closest("[data-k]");if(b)go(b.dataset.k)});
 function renderFree(){
   document.querySelectorAll("#freeSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===freeView));
-  $("#shiView").hidden=freeView!=="shi";$("#pathView").hidden=freeView!=="path";
+  $("#shiView").hidden=freeView!=="shi";$("#pathView").hidden=freeView!=="path";$("#letView").hidden=freeView!=="let";
   if(freeView==="path"){renderPath();return}
+  if(freeView==="let"){renderLet();return}
   const today=key(new Date()),ti=teachIdx(today);
   if(teachSel===null)teachSel=ti;
   $("#tNav").innerHTML=TEACH.map((_,i)=>`<button aria-pressed="${i===teachSel}" data-i="${i}" aria-label="가르침 ${i+1}">${i+1}</button>`).join("");
@@ -1769,7 +1875,7 @@ try{const t=localStorage.getItem("tab");if(t&&R[t])show(t)}catch(_){}
 
 // ---------- data (이 브라우저에 저장 · localStorage) ----------
 const ARCHIVE=[{"date": "2026-10-09", "title": "2026.10.09 · 내 안의 노래를 다시 듣는 시간", "line": "나 자신의 목소리와 내 안의 노래를 들으려 하는 중이다.", "themes": ["정체성", "감정"], "format": "선언·명상"}, {"date": "2026-10-06", "title": "2026.10.06 · 원하지만 매달리지 않는 힘", "line": "생각은 지나가게 두고, 삶은 살아낸다.", "themes": ["무위·비집착", "정체성", "감정"], "format": "긴 에세이"}, {"date": "2026-10-06", "title": "2026.10.06 · 나의 가장 안전한 사람", "line": "나는 존재한다. 증명하지 않는다.", "themes": ["감정", "신경계·안전모드", "몸·소마", "정체성"], "format": "선언·명상"}, {"date": "2026-10-06", "title": "2026.10.06 · 나를 사랑하기 때문에 강해진다", "line": "나는 나를 미워해야 움직이는 사람이 아니다. 나는 나를 사랑하기 때문에 강해진다.", "themes": ["정체성", "신경계·안전모드", "감정"], "format": "선언·명상"}, {"date": "2026-10-06", "title": "2026.10.06 · 기대되는 나의 기념여행 — TOKYO × KARUIZAWA", "line": "내가 만든 비즈니스가 월 1,000만 원 이상의 수익을 만들어내는 경험을 한 뒤, 변혁 1주년의 나에게 도쿄와 가루이자와 여행을 선물한다.", "themes": ["정체성", "호기심·흐름"], "format": "짧은 기록"}, {"date": "2026-10-06", "title": "2026.10.06 · 창조모드로 — 나로 돌아오는 길 (의식·과학 확장판)", "line": "나는 상처의 생존자가 아니라, 내 몸과 삶의 주인이다 — 안전모드에서 창조모드로.", "themes": ["정체성", "신경계·안전모드", "감정", "몸·소마"], "format": "긴 에세이"}, {"date": "2026-10-06", "title": "2026.10.06 · 나로 돌아오는 길 · 완전판 (전 아카이브 통합)", "line": "흩어진 모든 아카이브를 한 권으로 — 안전모드에서 창조모드로, 나로 돌아오는 길.", "themes": ["정체성", "신경계·안전모드", "감정", "몸·소마", "장자·철학"], "format": "긴 에세이"}, {"date": "2026-10-06", "title": "2026.10.06 · Let It Be — 숨에서 다시 시작하고, 지구에게 몸을 맡긴 날", "line": "나는 삶을 붙잡지 않는다. 삶에 몸을 맡기고, 깨어 있는 채로 응답한다.", "themes": ["신경계·안전모드", "몸·소마", "정체성", "무위·비집착"], "format": "긴 에세이"}, {"date": "2026-10-06", "title": "2026.10.06 · 나로 돌아오는 길 — 지현의 삶 나침반 (미니책)", "line": "나는 고장 난 적이 없다. 단지, 안전을 다시 배우면 된다.", "themes": ["정체성", "신경계·안전모드", "감정", "몸·소마"], "format": "긴 에세이"}, {"date": "2026-10-05", "title": "2026.10.05 · 나는 2027년 4월 30일의 나를 만나러 간다 — THE 692", "line": "나는 2027년 4월 30일의 나를 만나러 간다.", "themes": ["몸·소마", "정체성", "호기심·흐름"], "format": "긴 에세이"}, {"date": "2026-10-05", "title": "2026.10.05 · 공(空) — 비우고, 바라보고, 선택한다", "line": "수행은 고요함 속에 머무는 것이 아니라, 다시 세상으로 돌아왔을 때 어떤 나를 선택하느냐에 있는지도 모른다.", "themes": ["무위·비집착", "신경계·안전모드", "정체성", "감정", "몸·소마"], "format": "긴 에세이"}, {"date": "2026-10-03", "title": "2026.10.03 · 나의 롤모델을 발견한 날 — 한국의 아케미에서 유서진이라는 장르로", "line": "처음에는 ‘한국의 아케미’가 북극성이고, 최종 목적지는 ‘유서진이라는 장르’가 되는 것.", "themes": ["정체성", "호기심·흐름"], "format": "긴 에세이"}, {"date": "2026-10-02", "title": "2026.10.02 · 태양의 빛을 담다 — 나는 내 삶을 사랑하기로 결정했다", "line": "보이지 않는 날에도 태양은 존재한다. 나의 빛도 그렇다. 나는 내 삶을 사랑하기로 결정했다.", "themes": ["정체성", "감정", "호기심·흐름"], "format": "긴 에세이"}, {"date": "2026-09-30", "title": "2026.09.30 · 뜻대로 되지 않아도, 나는 나에게 돌아온다", "line": "내가 통제해야 안전한 것이 아니라, 통제할 수 없어도 다시 나에게 돌아올 수 있다는 것이 안전이다.", "themes": ["무위·비집착", "신경계·안전모드", "정체성", "감정"], "format": "짧은 기록"}, {"date": "2026-09-29", "title": "2026.09.29 · 결과를 기다리는 밤, 나는 나를 버리지 않았다", "line": "두려움이 사라진 하루가 아니라, 두려움에게 하루의 운전대를 넘겨주지 않은 하루.", "themes": ["신경계·안전모드", "감정", "정체성"], "format": "긴 에세이"}, {"date": "2026-09-29", "title": "2026.09.29 · 그냥 하면 된다 — 하루 1%의 자기신뢰", "line": "실패는 없다. 오늘의 1%를 계속하면 나는 변한다.", "themes": ["정체성", "호기심·흐름"], "format": "긴 에세이"}, {"date": "2026-09-23", "title": "2026.09.23 · 선물을 고르는 행복", "line": "엄마가 좋아할 모습을 상상하는 동안, 먼저 행복해진 사람은 나였다.", "themes": ["감정"], "format": "짧은 기록"}, {"date": "2026-09-22", "title": "2026.09.22 · 유서진, 다시 태어나다 — 인생 2막", "line": "날 귀하게 돌보기 시작한 해. 밖에서 나를 찾는 일을 멈추고, 내 몸을 집이자 신전으로 삼으며 인생 2막을 시작한다.", "themes": ["정체성", "신경계·안전모드", "몸·소마", "감정"], "format": "긴 에세이"}, {"date": "2026-09-21", "title": "2026.09.21 · 몸을 신전으로 삼기로 한 날", "line": "나는 과거를 갚기 위해 사는 것이 아니라, 남아 있는 삶을 의미 있게 사용하기 위해 산다.", "themes": ["정체성", "감정", "몸·소마"], "format": "긴 에세이"}, {"date": "2026-09-21", "title": "2026.09.21 · 아프고 나니 만사가 귀찮아졌다", "line": "몸은 아픈데, 생각할 힘이 없어서 마음은 잠시 조용하다.", "themes": ["감정", "몸·소마", "신경계·안전모드"], "format": "짧은 기록"}, {"date": "2026-09-21", "title": "2026.09.21 · 도피처가 아니라 현실을 만든다", "line": "도피할 곳이 많은 삶이 아니라, 도피하지 않아도 괜찮은 현실을 만든다.", "themes": ["감정", "정체성"], "format": "긴 에세이"}, {"date": "2026-09-19", "title": "2026.09.19 · 상수와 변수 — 내 삶의 에너지를 어디에 쓸 것인가", "line": "결과는 삶에게 맡기고, 선택은 내가 한다.", "themes": ["무위·비집착", "신경계·안전모드", "호기심·흐름"], "format": "긴 에세이"}, {"date": "2026-09-19", "title": "2026.09.19 · 풍요를 미래로 미루지 않는다 — 나의 기본값을 실제 경험으로 바꾸기", "line": "풍요는 많이 소비하는 상태가 아니라, 나는 선택권이 있고 좋은 것을 받아들여도 안전하며 충분히 누릴 수 있다는 상태다.", "themes": ["정체성", "신경계·안전모드", "호기심·흐름"], "format": "긴 에세이"}, {"date": "2026-09-18", "title": "2026.09.18 · 다시 바닥에서", "line": "좋은 영화에는 중간에 주인공이 완전히 망하는 장면도 있다.", "themes": ["정체성", "신경계·안전모드"], "format": "긴 에세이"}, {"date": "2026-09-18", "title": "2026년의 질문, 인간으로 태어난 이 한 번의 생을, 어떻게 충분히 경험하고 갈 것인가.", "line": "나는 오늘 무엇을 생생하게 경험하고 싶은가?", "themes": ["정체성", "호기심·흐름", "신경계·안전모드"], "format": "긴 에세이"}, {"date": "2026-09-18", "title": "2026.09.18 · 돈을 벌어도 나는 불안했다", "line": "성공해서 안전해지는 것이 아니라, 안전해진 나로부터 창조해보기.", "themes": ["신경계·안전모드", "정체성", "감정"], "format": "긴 에세이"}, {"date": "2026-09-17", "title": "2026.09.17 · 《영거》를 보며 알게 된 내가 원하는 여자와 사랑", "line": "자기 삶을 스스로 이끌 수 있는 나, 그리고 그런 나를 축소시키지 않고 사랑에서는 분명하게 내 편이 되어주는 사람.", "themes": ["정체성", "감정"], "format": "긴 에세이"}, {"date": "2026-09-17", "title": "2026.09.17 · 아프지 않은 평범한 하루의 가치", "line": "아무 데도 아프지 않은 날은 아무 일도 없는 날이 아니라, 모든 것이 잘 작동하고 있는 날이었다.", "themes": ["몸·소마", "신경계·안전모드", "감정"], "format": "긴 에세이"}, {"date": "2026-09-15", "title": "2026.09.15 · 무심함도 때로는 무례함이 된다", "line": "나는 느낀 것을 억누르지도 않고, 느낀 것만으로 상대를 판결하지도 않는 사람이 되고 싶다.", "themes": ["감정", "정체성"], "format": "긴 에세이"}, {"date": "2026-09-13", "title": "2026.09.13 · 나는 부족한 적이 없었다 — 내 존재 자체가 곧 풍요다", "line": "나는 부족함을 경험한 적은 있지만, 부족한 존재였던 적은 없다. 나는 처음부터 충분했다. 내 존재 자체가 곧 풍요였으니까.", "themes": ["정체성", "무위·비집착"], "format": "긴 에세이"}, {"date": "2026-09-12", "title": "2026.09.12 · 울 엄마", "line": "사무치게 그냥. 그냥 가슴이 마음이 저릿한 세글자. 울 엄마.", "themes": ["감정"], "format": "짧은 기록"}, {"date": "2026-09-12", "title": "2026.09.12 · 균형", "line": "나는 아무것도 포기하지 않는다. 다만, 아무것도 나의 존재보다 중요하게 만들지 않는다.", "themes": ["무위·비집착", "정체성", "감정"], "format": "긴 에세이"}, {"date": "2026-09-12", "title": "2026.09.12 · 선택받는 삶에서, 나를 선택하는 삶으로", "line": "누군가가 나를 선택해줘야 안전한 것이 아니라, 어떤 순간에도 내가 나를 다시 선택할 수 있다는 감각.", "themes": ["신경계·안전모드", "감정", "몸·소마", "정체성"], "format": "긴 에세이"}, {"date": "2026-09-08", "title": "2026.09.08 · 얼음물 속에서 잠시 ‘나’가 사라지는 시간", "line": "찬물이 좋은 것만이 아니라, 찬물 속에서 이름과 역할과 생각이 잠시 사라지고 존재만 남는 그 고요가 좋다.", "themes": ["신경계·안전모드", "몸·소마", "정체성"], "format": "긴 에세이"}, {"date": "2026-09-07", "title": "2026.09.07 · 나의 캘린더 기록들 — 6–8월, 내가 나에게 남겨놓은 말들", "line": "천천히. 증명하지 않는다. 두려움을 데리고 행동한다. 내 몸의 신호를 듣고, 통제하지 않으며, 나를 먼저 사랑한다. 나는 이미 충분하다.", "themes": ["신경계·안전모드", "정체성", "무위·비집착", "몸·소마"], "format": "긴 에세이"}, {"date": "2026-09-05", "title": "2026.09.05 · 진미채를 사러 가지 않았더니 진미채가 왔다", "line": "내가 모든 것을 움켜쥐고 움직이지 않아도, 삶이 나에게 오는 순간이 있다.", "themes": ["무위·비집착", "신경계·안전모드", "감정", "호기심·흐름"], "format": "짧은 기록"}, {"date": "2026-09-03", "title": "2026.09.03 · 내가 나를 믿을 이유를 만들어간다", "line": "다른 사람은 내 기대를 저버릴 수도 있지만, 나와 한 약속은 내가 지키면 된다.", "themes": ["정체성", "몸·소마", "감정"], "format": "짧은 기록"}, {"date": "2026-09-02", "title": "2026.09.02 · 설렘은 가져가고, 선택권은 나에게", "line": "나를 아름답게 만든 설렘에는 감사하지만, 그 사람이 반드시 내 사람이 될 필요는 없다.", "themes": ["정체성", "감정", "신경계·안전모드"], "format": "긴 에세이"}, {"date": "2026-08-20", "title": "2026.08.20 · 잠재의식 셋팅 — 선택하는 지현의 하루", "line": "나는 즉시 반응하지 않는다. 나는 선택해서 반응한다.", "themes": ["정체성", "신경계·안전모드", "몸·소마"], "format": "선언·명상"}, {"date": "2026-08-01", "title": "2026.08.01 · 레오를 바라보는 눈으로 나를 바라보기", "line": "레오를 사랑하는 그 눈길을, 이제 나 자신에게도 돌린다.", "themes": ["감정", "정체성", "몸·소마", "호기심·흐름"], "format": "긴 에세이"}, {"date": "2026-08-01", "title": "2026.08.01 · 사랑이 깊은 사람은 미래의 그리움까지 사랑한다", "line": "나는 약한 사람이 아니라, 깊이 사랑하는 사람이었다.", "themes": ["감정", "몸·소마", "정체성", "호기심·흐름"], "format": "긴 에세이"}, {"date": "2026-07-28", "title": "2026.07.28 · 나는 스스로를 알아차리기 시작한 우주다", "line": "나는 우주 안에 사는 존재가 아니라, 스스로를 알아차리기 시작한 우주 그 자체다.", "themes": ["정체성", "장자·철학"], "format": "짧은 기록"}, {"date": "2026-07-28", "title": "30일 재설계 · 나에게 맞는 5가지만", "line": "12개를 다 하려는 것 자체가 완벽주의다. 나는 이미 잘하는 것만 시스템으로 굳힌다.", "themes": ["정체성", "신경계·안전모드"], "format": "짧은 기록"}, {"date": "2026-07-28", "title": "2026.07.28 · 경계를 세우는 것이 가장 높은 사랑이다", "line": "경계는 냉정함이 아니라, 내 영혼을 담보로 맡기지 않는 가장 높은 형태의 사랑이다.", "themes": ["정체성", "신경계·안전모드", "감정", "장자·철학"], "format": "긴 에세이"}, {"date": "2026-07-28", "title": "2026.07.28 · 92일, 20년의 늪에서 걸어 나오다", "line": "나는 의지로 습관을 없앤 것이 아니라, 먼저 안전을 만들었다.", "themes": ["신경계·안전모드", "정체성", "몸·소마", "감정"], "format": "긴 에세이"}, {"date": "2026-07-28", "title": "남은 5개월 · 허비하지 않는 12가지", "line": "작은 습관 하나가 몇 달 뒤의 나를 만든다. 오늘 시작한다.", "themes": ["정체성", "신경계·안전모드"], "format": "짧은 기록"}, {"date": "2026-07-28", "title": "2026.07.28 · 별이 된 눈동자", "line": "오늘 나는 시간을 보낸 것이 아니라, 한 순간을 깊이 살아냈다.", "themes": ["몸·소마", "감정", "호기심·흐름", "장자·철학"], "format": "긴 에세이"}, {"date": "2026-07-28", "title": "2026.07.28 · 나는 내 연극의 극작가다", "line": "고통은 스승이 아니라 내가 쓴 대본이다. 대본은 언제든 다시 쓸 수 있다.", "themes": ["정체성", "신경계·안전모드", "호기심·흐름"], "format": "짧은 기록"}, {"date": "2026-07-28", "title": "2026.07.28 · Volunteer Candidate JiHyun", "line": "중요한 건 어떤 이름을 붙이느냐가 아니라, 어떤 삶을 선택하느냐다.", "themes": ["정체성", "호기심·흐름", "감정"], "format": "짧은 기록"}, {"date": "2026-07-26", "title": "2026.07.26 · 머리로 떠오른 건 재료다", "line": "앞에 자극이 있었고 몸이 먼저 움직였으면 그냥 간다. 머리에서 툭 튀어나왔으면 하룻밤 재운다.", "themes": ["무위·비집착", "몸·소마"], "format": "짧은 기록"}, {"date": "2026-07-25", "title": "2026.07.25 · 햇빛 아래에서, 레오의 시간을 보았다", "line": "오늘 나는 슬픈 사람이 아니라, 사랑이 많은 사람이었다.", "themes": ["감정", "몸·소마", "신경계·안전모드", "호기심·흐름"], "format": "긴 에세이"}, {"date": "2026-07-25", "title": "2026.07.25 · 난 이미 부자였어", "line": "이제는 부족함에서 선택하는 것이 아니라, 풍요로움에서 선택한다.", "themes": ["정체성", "호기심·흐름"], "format": "짧은 기록"}, {"date": "2026-07-25", "title": "2026.07.25 · 손아귀의 힘을 5%씩 빼는 연습", "line": "손을 다 펼 수 없어도, 쥐고 있다는 걸 알아차릴 때마다 힘을 5%씩 빼면 된다.", "themes": ["감정", "신경계·안전모드", "무위·비집착", "정체성"], "format": "긴 에세이"}, {"date": "2026-07-24", "title": "2026.07.24 · 힘을 빼고, 물 위에 떠 있듯", "line": "오늘만큼은 조금 내려놓자. 힘을 빼자. 그리고 숨을 쉬자.", "themes": ["감정", "신경계·안전모드", "몸·소마", "호기심·흐름"], "format": "긴 에세이"}, {"date": "2026-07-22", "title": "2026.07.22 · 비는 오래 내렸다 (PART 3)", "line": "비는 오래 내렸지만, 내 안에서는 아주 작은 계절 하나가 조용히 바뀌고 있었다.", "themes": ["감정", "정체성", "몸·소마"], "format": "긴 에세이"}, {"date": "2026-07-22", "title": "2026.07.22 · 나는 왜 결국 신경계를 공부하게 되었는가 (PART 4)", "line": "나는 고장 난 사람이 아니라, 몸이 너무 오래 나를 지켜 온 사람이었다.", "themes": ["신경계·안전모드", "정체성", "몸·소마", "감정"], "format": "긴 에세이"}];
-const DECLS=[{"id":"seojin","title":"SEOJIN YOO · 이번 삶의 추구","order":-1,"body":""},{"id": "body", "title": "몸의 선언", "order": 0, "body": "나는 이제 더 가벼워지기 위해 나를 줄이지 않는다.\n내 몸을 더 건강하고 단단하게 채워가기로 했다.\n깊게 숨 쉬고, 부드럽게 움직이고, 충분히 쉬고, 즐겁게 살아간다.\n나이가 들어가는 것을 두려워하기보다, 해마다 더 생기 있고 자유로운 내가 되는 것을 선택한다."}, {"id": "anchor", "title": "매일의 닻", "order": 1, "body": "나는 이미 충분하다. 존재만으로 . 증명하려 애쓰지 않아도된다. 그저 존재하기.\n나는 사랑받고 자란 사람이다.\n나는 상처만의 결과물이 아니라, 사랑의 결과물이기도 하다.\n나는 이미 충분한 사람이다.\n나는 존재만으로도 안전하고 충만한 사람이다.\n\n나는 유능한 사람이 되기보다, 행복한 사람으로 살아간다.\n나는 행복을 쫓지 않는다. 행복 안에 머무는 사람이다.\n\n나는 잘 느끼고, 회복하고, 꾸준히 성장하며, 창조하는 사람이다.\n나는 내 삶의 항해사이며, 작은 반복을 신뢰한다.\n나는 오늘의 작은 선택이 미래를 만든다는 것을 안다.\n나는 내 에너지를 가장 먼저 나에게 투자한다.\n\n나는 내 몸을 가장 소중히 여기고, 안전모드를 삶의 기반으로 삼는다.\n나는 내 몸의 신호를 믿는다.\n나는 몸과 싸우지 않고, 몸과 협력하는 사람이다.\n나는 언제나 나를 가장 먼저 귀하게 대한다.\n\n나는 내 감정을 고치거나 없애려 하지 않는다.\n나는 나의 모든 감정을 있는 그대로 허용하고, 함께 머무르는 사람이다.\n감정은 나를 괴롭히는 적이 아니라, 나를 지키려는 신호임을 기억한다.\n나는 내 안의 책임감과 조급함마저도 사랑으로 안아줄 수 있는 사람이다.\n\n나는 회피보다 알아차림을 선택한다.\n나는 통제보다 신뢰를 선택한다.\n나는 속도보다 리듬을 선택한다.\n나는 성취보다 존재를 먼저 선택한다.\n나는 Doing보다 Being을 먼저 살아간다.\n\n나는 오늘 이 순간을 살아가는 사람이다.\n나는 현존을 연습하며, 지금 이 순간의 삶을 온전히 경험하기로 선언한다.\n나는 완벽해지려고 애쓰지 않는다.\n나는 오늘의 행복을 충분히 느끼며 살아간다.\n나는 이미 충분한 상태에서, 더 큰 삶을 기쁘게 허용한다.\n나는 혼자서도 충만하고, 함께여서 더욱 따뜻한 사람이다.\n나는 오늘의 나를 충분히 사랑하며, 매일 조금씩 나 자신을 다시 만나기로 선택한다.\n\n나는 답을 밖에서 찾기보다, 내 안의 지혜를 신뢰한다.\n나는 삶을 신뢰한다.\n나는 기질에 갇히지 않는다.\n기질은 출발점일 뿐, 나는 매일 스스로를 재창조한다.\n\n그리고 어떤 계절이 오더라도,\n나는 결국 나 자신에게 돌아오는 사람이다.\n나는 오늘도 나를 가장 귀하게 대하며,\n행복 안에 머무는 삶을 선택한다."}, {"id": "v5", "title": "v5 · 그것이 나의 리듬이다", "order": 2, "body": "나는 더 많이 알고, 더 열심히 하고, 더 대단한 사람이 되어야만 가치 있는 사람이 아니다.\n나는 내 몸이 살아나는 것에 반응하고,\n혼자 깊이 들어가 내가 본 것을 발견하며,\n그것을 나만의 언어와 형태로 세상에 내놓는다.\n나는 모든 사람을 설득하지 않는다.\n나를 알아보는 사람들과 연결된다.\n나는 의미 없는 싸움에 나를 소모하지 않는다.\n대신 싸울 가치가 있는 문제를 연구하고 새로운 것을 만든다.\n돈은 나를 증명하기 위한 것이 아니라\n내 시간·공간·관계·선택의 자유를 지키기 위한 자원이다.\n나의 삶은 더 많은 것을 억지로 더하는 과정이 아니라\n내가 아닌 것을 하나씩 내려놓아\n원래의 나로 살아가는 과정이다.\n나는 들어가고, 깊어지고, 발견하고, 만들고, 내놓고, 응답하고, 다시 돌아온다.\n그것이 나의 리듬이고,\n그것이 내가 앞으로 지켜갈 삶이다."}, {"id": "creator", "title": "창조자 선언", "order": 3, "body": "나는 상처를 연구하기 위해 태어난 사람이 아니다.\n나는 상처를 통과하며 얻은 통찰을 사람들에게 전하기 위해 태어난 사람이다.\n나의 최종 목표는 회복이 아니라 창조이다.\n나는 신경계가 안정된 상태에서 풍요를 창조하는 사람이다.\n나는 AI와 시스템을 활용하여 혼자서도 가치 있는 사업을 만들 수 있다.\n나는 정서적으로 독립적이며 경제적으로도 독립적인 삶을 만들어간다.\n나의 경험은 콘텐츠가 되고,\n콘텐츠는 자산이 되고,\n자산은 자유를 만든다.\n그리고 그 자유는 나와 다른 사람들을 더 안전하게 만든다.\n\n나는 더 많이 일해서 성공하는 사람이 아니라,\n내가 창조한 가치가 나를 대신해 일하는 구조를 만드는 사람이다."}];
+const DECLS=[{"id":"letgo","title":"뭐 어때 · 무집착 선언","order":-0.5,"body":"나는 나의 가치를 외부 조건에 맡기지 않는다.\n나는 성공해도 실패해도 같은 가치를 지닌 사람이다.\n나는 사랑받아도 미움받아도 같은 가치를 지닌 사람이다.\n나는 인정받든 받지 못하든 흔들리지 않는 중심을 지닌다.\n나는 파도가 아니라 바다 깊은 곳에 존재의 기반을 둔다.\n나는 최선을 다하되, 결과에 존재 가치를 걸지 않는다.\n나는 집착이 올라와도 나를 탓하지 않고, 알아차리고 흘려보낸다.\n나는 남들의 속도가 아니라 나의 속도로 간다.\n아무래도 상관없다 — 그 여백에서 나는 가볍게 산다."},{"id":"seojin","title":"SEOJIN YOO · 이번 삶의 추구","order":-1,"body":""},{"id": "body", "title": "몸의 선언", "order": 0, "body": "나는 이제 더 가벼워지기 위해 나를 줄이지 않는다.\n내 몸을 더 건강하고 단단하게 채워가기로 했다.\n깊게 숨 쉬고, 부드럽게 움직이고, 충분히 쉬고, 즐겁게 살아간다.\n나이가 들어가는 것을 두려워하기보다, 해마다 더 생기 있고 자유로운 내가 되는 것을 선택한다."}, {"id": "anchor", "title": "매일의 닻", "order": 1, "body": "나는 이미 충분하다. 존재만으로 . 증명하려 애쓰지 않아도된다. 그저 존재하기.\n나는 사랑받고 자란 사람이다.\n나는 상처만의 결과물이 아니라, 사랑의 결과물이기도 하다.\n나는 이미 충분한 사람이다.\n나는 존재만으로도 안전하고 충만한 사람이다.\n\n나는 유능한 사람이 되기보다, 행복한 사람으로 살아간다.\n나는 행복을 쫓지 않는다. 행복 안에 머무는 사람이다.\n\n나는 잘 느끼고, 회복하고, 꾸준히 성장하며, 창조하는 사람이다.\n나는 내 삶의 항해사이며, 작은 반복을 신뢰한다.\n나는 오늘의 작은 선택이 미래를 만든다는 것을 안다.\n나는 내 에너지를 가장 먼저 나에게 투자한다.\n\n나는 내 몸을 가장 소중히 여기고, 안전모드를 삶의 기반으로 삼는다.\n나는 내 몸의 신호를 믿는다.\n나는 몸과 싸우지 않고, 몸과 협력하는 사람이다.\n나는 언제나 나를 가장 먼저 귀하게 대한다.\n\n나는 내 감정을 고치거나 없애려 하지 않는다.\n나는 나의 모든 감정을 있는 그대로 허용하고, 함께 머무르는 사람이다.\n감정은 나를 괴롭히는 적이 아니라, 나를 지키려는 신호임을 기억한다.\n나는 내 안의 책임감과 조급함마저도 사랑으로 안아줄 수 있는 사람이다.\n\n나는 회피보다 알아차림을 선택한다.\n나는 통제보다 신뢰를 선택한다.\n나는 속도보다 리듬을 선택한다.\n나는 성취보다 존재를 먼저 선택한다.\n나는 Doing보다 Being을 먼저 살아간다.\n\n나는 오늘 이 순간을 살아가는 사람이다.\n나는 현존을 연습하며, 지금 이 순간의 삶을 온전히 경험하기로 선언한다.\n나는 완벽해지려고 애쓰지 않는다.\n나는 오늘의 행복을 충분히 느끼며 살아간다.\n나는 이미 충분한 상태에서, 더 큰 삶을 기쁘게 허용한다.\n나는 혼자서도 충만하고, 함께여서 더욱 따뜻한 사람이다.\n나는 오늘의 나를 충분히 사랑하며, 매일 조금씩 나 자신을 다시 만나기로 선택한다.\n\n나는 답을 밖에서 찾기보다, 내 안의 지혜를 신뢰한다.\n나는 삶을 신뢰한다.\n나는 기질에 갇히지 않는다.\n기질은 출발점일 뿐, 나는 매일 스스로를 재창조한다.\n\n그리고 어떤 계절이 오더라도,\n나는 결국 나 자신에게 돌아오는 사람이다.\n나는 오늘도 나를 가장 귀하게 대하며,\n행복 안에 머무는 삶을 선택한다."}, {"id": "v5", "title": "v5 · 그것이 나의 리듬이다", "order": 2, "body": "나는 더 많이 알고, 더 열심히 하고, 더 대단한 사람이 되어야만 가치 있는 사람이 아니다.\n나는 내 몸이 살아나는 것에 반응하고,\n혼자 깊이 들어가 내가 본 것을 발견하며,\n그것을 나만의 언어와 형태로 세상에 내놓는다.\n나는 모든 사람을 설득하지 않는다.\n나를 알아보는 사람들과 연결된다.\n나는 의미 없는 싸움에 나를 소모하지 않는다.\n대신 싸울 가치가 있는 문제를 연구하고 새로운 것을 만든다.\n돈은 나를 증명하기 위한 것이 아니라\n내 시간·공간·관계·선택의 자유를 지키기 위한 자원이다.\n나의 삶은 더 많은 것을 억지로 더하는 과정이 아니라\n내가 아닌 것을 하나씩 내려놓아\n원래의 나로 살아가는 과정이다.\n나는 들어가고, 깊어지고, 발견하고, 만들고, 내놓고, 응답하고, 다시 돌아온다.\n그것이 나의 리듬이고,\n그것이 내가 앞으로 지켜갈 삶이다."}, {"id": "creator", "title": "창조자 선언", "order": 3, "body": "나는 상처를 연구하기 위해 태어난 사람이 아니다.\n나는 상처를 통과하며 얻은 통찰을 사람들에게 전하기 위해 태어난 사람이다.\n나의 최종 목표는 회복이 아니라 창조이다.\n나는 신경계가 안정된 상태에서 풍요를 창조하는 사람이다.\n나는 AI와 시스템을 활용하여 혼자서도 가치 있는 사업을 만들 수 있다.\n나는 정서적으로 독립적이며 경제적으로도 독립적인 삶을 만들어간다.\n나의 경험은 콘텐츠가 되고,\n콘텐츠는 자산이 되고,\n자산은 자유를 만든다.\n그리고 그 자유는 나와 다른 사람들을 더 안전하게 만든다.\n\n나는 더 많이 일해서 성공하는 사람이 아니라,\n내가 창조한 가치가 나를 대신해 일하는 구조를 만드는 사람이다."}];
 DECLS[0].body=SEOJIN_DECL;
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(_){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(_){return false}}};
 function fnv(t){let h1=0x811c9dc5,h2=0x1b873593;for(const c of t){const x=c.codePointAt(0);h1=Math.imul(h1^x,16777619)>>>0;h2=Math.imul(h2^x,2246822519)>>>0}return "f"+h1.toString(16)+h2.toString(16)}
